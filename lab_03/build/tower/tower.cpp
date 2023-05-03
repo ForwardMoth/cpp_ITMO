@@ -5,12 +5,12 @@ using namespace std;
 
 struct Node {
     int Data;
-    char from, to;
+    int from, to;
     Node* prev;
     Node* next;
 };
 
-void Move(Node** headPointer, int disk, char from, char to) {
+void Move(int disk, int from, int to, Node** headPointer) {
     Node* newMove = new Node;
     newMove->Data = disk;
     newMove->from = from;
@@ -24,16 +24,15 @@ void Move(Node** headPointer, int disk, char from, char to) {
     *headPointer = newMove;
 }
 
-
-void MoveTower(int disk, char point1, char point2, char temporaryPoint, Node** headPointer) {
+void MoveTower(int disk, int from, int to, int tmp, Node** headPointer) {
     if (disk == 0)
         return;
     
-    MoveTower(disk - 1, point1, temporaryPoint, point2, headPointer);
+    MoveTower(disk - 1, from, tmp, to, headPointer);
 
-    Move(headPointer, disk, point1, point2); 
+    Move(disk, from, to, headPointer); 
 
-    MoveTower(disk - 1, temporaryPoint, point2, point1, headPointer);
+    MoveTower(disk - 1, tmp, to, from, headPointer);
 }
 
 void print(Node** head) {
@@ -45,11 +44,11 @@ void print(Node** head) {
 }
 
 int main() {
-    int N=8;
+    int N=3;
 
     Node* head= nullptr; 
 
-    MoveTower(N, 'A', 'C', 'B', &head);
+    MoveTower(N, 1, 2, 3, &head);
 
     print(&head);
 
