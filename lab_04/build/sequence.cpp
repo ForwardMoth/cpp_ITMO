@@ -5,28 +5,19 @@
 
 using namespace std;
 
-int FirstFunction(int x) {
-    return x * x - x * x + x * 4 - x * 5 + x + x;
-}
+void calculations(const int N) {
+    auto start = chrono::high_resolution_clock::now();  
+    int first_result[N], second_result[N], third_result[N];
 
-int SecondFunction(int x) {
-    return x + x;
-}
+    for(int i=0;i<N;i++) 
+        first_result[i] = i * i - i * i  + 4 * i  - 5 * i + i + i;
 
-int ThirdFunction(int a, int b) {
-    return a + b - a;
-}
+    for(int i=0;i<N;i++) 
+        second_result[i] = i + i;
 
-void Calculations(const int N) { 
-    auto start = chrono::high_resolution_clock::now();    
-    for(int i=0;i<N;i++) {
-        int first_result = FirstFunction(i);
-        this_thread::sleep_for(chrono::milliseconds(1));
-        int second_result = SecondFunction(i);
-        this_thread::sleep_for(chrono::milliseconds(1));
-        int third_result = ThirdFunction(first_result, second_result);
-        this_thread::sleep_for(chrono::milliseconds(1));
-    }
+    for(int i=0;i<N;i++) 
+        third_result[i] = first_result[i] + second_result[i] - first_result[i];
+    
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration<double>(end - start).count(); 
     cout << "Duration " << fixed << setprecision(4) << duration << " seconds" << "\n";
@@ -34,11 +25,11 @@ void Calculations(const int N) {
 
 
 int main() {
-    const int N = 100;
-    const int M = 1000;
+    const int M = 10000;
+    const int N = 100000;
 
-    Calculations(N); 
-    Calculations(M);
+    calculations(M);
+    calculations(N);
 
     return 0;
 }

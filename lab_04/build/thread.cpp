@@ -5,41 +5,29 @@
 
 using namespace std;
 
-int FirstFunction(int x) {
-    return x * x - x * x + x * 4 - x * 5 + x + x;
-}
-
-int SecondFunction(int x) {
-    return x + x; 
-}
-
-int ThirdFunction(int a, int b) {
-    return a + b - a;
-}
-
-void Calculations(const int N) { 
+void calculations(const int N){
     auto start = chrono::high_resolution_clock::now();  
-    int first_result, second_result, third_result;   
-    for(int i=0;i<N;i++) {
-        thread th([&first_result, &i]() { 
-            first_result = FirstFunction(i); 
-            this_thread::sleep_for(chrono::nanoseconds(1));
-        });
+    int first_result[N], second_result[N], third_result[N];
 
-        thread th1([&second_result, &i]() {
-            second_result = SecondFunction(i);
-            this_thread::sleep_for(chrono::milliseconds(1));
-        });
+    thread th([&N, &first_result]() {
+        for(int i=0;i<N;i++) 
+            first_result[i] = i * i - i * i  + 4 * i  - 5 * i + i + i;
+    });
 
-        thread th2([&third_result,&first_result,&second_result]() {
-            third_result = ThirdFunction(first_result, second_result);
-            this_thread::sleep_for(chrono::milliseconds(1));
-        });
+    thread th1([&N, &second_result]() {
+        for(int i=0;i<N;i++) 
+            second_result[i] = i + i;
+    });
 
-        th.join();
-        th1.join();
-        th2.join();
-    }
+    thread th2([&N, &first_result, &second_result, &third_result]() {
+        for(int i=0;i<N;i++) 
+            third_result[i] = first_result[i] + second_result[i] - first_result[i];
+    });
+
+    th.join();
+    th1.join();
+    th2.join();
+    
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration<double>(end - start).count(); 
     cout << "Duration " << fixed << setprecision(4) << duration << " seconds" << "\n";
@@ -47,11 +35,11 @@ void Calculations(const int N) {
 
 
 int main() {
-    const int N = 100;
-    const int M = 1000;
+    const int M = 10000;
+    const int N = 100000;
 
-    Calculations(N); 
-    Calculations(M);
+    calculations(M);
+    calculations(N);
 
     return 0;
 }

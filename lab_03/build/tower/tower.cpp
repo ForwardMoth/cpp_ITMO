@@ -38,7 +38,7 @@ void MoveTower(int disk, int from, int to, int tmp, Node** headPointer) {
 void print(Node** head) {
     Node* temp = *head;   
     while (temp) {
-        cout << "Move disk " << temp->Data << " from peg " << temp->from << " to peg " << temp->to << "\n";
+        cout << "Move disk " << temp->Data << " from " << temp->from << " to " << temp->to << "\n";
         temp = temp->prev;
     }
 }
