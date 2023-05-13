@@ -12,11 +12,6 @@ void FileHandler::handle() {
     close();
 }
 
-void FileHandler::printCommands() {
-    for (int i=0;i<commands.size();i++) 
-        std::cout << commands[i] << "\n";
-}
-
 void FileHandler::open(){
     file.open(file_name);
 }
@@ -31,6 +26,10 @@ bool FileHandler::isOpen() {
         return false; 
     }
     return true;
+}
+
+std::vector<std::string> FileHandler::getCommands() {
+    return commands;
 }
 
 void FileHandler::read() {

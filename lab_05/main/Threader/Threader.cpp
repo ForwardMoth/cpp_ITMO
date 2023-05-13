@@ -5,15 +5,19 @@ Threader::Threader(std::vector<std::string> commands) {
 }
 
 void Threader::executeThread() {
-    for(int i=0;i < thread_commands.size();i+= N) {
-        std::vector <std::thread> threads;
-        for(int j=0; j < N; j++) {
-            
-            threads.push_back(std::thread(Parser::parse, thread_commands[j]));
+    int size = thread_commands.size(); 
+    for(int i=0;i<size; i+=N) {
+        int start = i; 
+        int end = std::min(i+N, size); 
+
+        std::vector <std::thread> threads; 
+
+        for(int j=start; j<end; j++) {
+            threads.push_back(std::thread(Parser::parse, thread_commands[j], j)); 
         }
 
-        for(int j=0; j < N; j++) {
-            threads[j].join();
+        for(std::thread& thread : threads) {
+            thread.join();
         }
     }
 }

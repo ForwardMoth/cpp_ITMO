@@ -1,8 +1,8 @@
-INT a 
-LOOP(0,10,5) { INT a, a = a * 2, print(a) }
-INT b 
-INT a = 1 
-INT b = 10 
-INT a, INT b, a + b
-print("cnhjrf")
-File.write("name", "string")
+INT a;
+LOOP(0,10,5) { INT a, a = a * 2, print(a) };
+INT b; 
+INT a = 1; 
+INT b = 10; 
+INT a; INT b; a + b;
+print("cnhjrf");
+File.write("name", "string");
