@@ -8,7 +8,7 @@
 using namespace std;
 
 int main() {
-    const int N = 10000;
+    const int N = 100000;
 
     auto start = chrono::high_resolution_clock::now();   
     int fd[2], fd1[2]; 
