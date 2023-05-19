@@ -13,12 +13,6 @@ std::string Object::getValue(std::string name){
     return data[name]; 
 }
 
-template<typename Value>
-bool Object::isKeyExists(std::map<std::string, Value> data, std::string key) { 
-    auto it = data.find(key); 
-    return (it != data.end()) ? true : false; 
-}
-
 bool Object::isValidKey(std::string key) {
     if (key.length() > 64)
         return false; 
@@ -38,4 +32,8 @@ bool Object::isString(std::string value) {
             return true;
     }
     return false; 
+}
+
+bool Object::findKey(std::string key) {
+    return (data.find(key) == data.end()) ? false : true;
 }

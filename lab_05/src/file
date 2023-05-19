@@ -1,8 +1,8 @@
-int a;
-loop(0,10,5) { int a, a = a * 2, print(a) };
-int b; 
-int a = 1; 
-int b = 10; 
-int a; int b; a + b;
-print("cnhjrf");
+int a = 1, print(a);
+print('cnhjrf');
+int a = 1, int b = 10, a = a + b, print(a);
+int x = 10, int y = 11, x = x * y, print(x), print(y);
+loop(0,10,5) { int c=1, c = c * 2, print(c) };
 file.write("name", "string");
+int x = 2, int y = -1, x = x / y, print(x);
+int u = 120, int z = -10, z = z - u, print(z);
