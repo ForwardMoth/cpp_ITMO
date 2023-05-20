@@ -5,49 +5,68 @@ void Parser::parse(std::string command, int id) {
     auto start = std::chrono::steady_clock::now();
     Parser::executeCommands(command); 
     auto end = std::chrono::steady_clock::now();
-    // std::cout << "Thread " << id << " execution time: " << 
-    // std::fixed << std::setprecision(3) << std::chrono::duration<double>(end - start).count() * 1000 << "\n";
+    std::cout << "Thread " << id << " execution time: " << 
+    std::fixed << std::setprecision(3) << std::chrono::duration<double>(end - start).count() * 1000 << "\n";
 }
 
 
 void Parser::executeCommands(std::string line) {
-    std::vector<std::string> commands = Parser::split(line, ';');
-    
+    std::vector<std::string> commands = Parser::split(line, ',');
+
+    Object obj;
+    Integer int_obj;
+
     for(std::string command : commands) {
-        Parser::distributeCommand(command);
+        Parser::distributeCommand(command, obj, int_obj);
     }
         
 }
 
 
-void Parser::distributeCommand(std::string command) {
-    Object obj;
-    Integer int_obj;
-
+void Parser::distributeCommand(std::string command, Object &obj, Integer &int_obj) {
     if (Parser::findFirstSubstring(command, "loop")) {
+        std::vector <int> loop_params = Parser::getLoopParams(command);     
+
         Parser::getLoopBody(command); 
-        std::vector<std::string> loop_commands = Parser::split(command, ',');
-        for(std::string com : loop_commands) 
-            Parser::caseCommands(com, obj, int_obj);
+
+        std::vector<std::string> loop_commands = Parser::split(command, ';');
+
+        for(std::string com : loop_commands)
+            Parser::dropSpaces(com);
+
+        for(int i=loop_params[0]; i < loop_params[1]; i+= loop_params[2])
+            for(std::string com : loop_commands) {
+                Parser::caseCommands(com, obj, int_obj);
+            }
     }
     else {
-        std::vector<std::string> loop_commands = Parser::split(command, ',');
-        for(std::string com : loop_commands) {
-            Parser::DropSpaces(com); 
-            Parser::caseCommands(com, obj, int_obj);
-        }
+        Parser::dropSpaces(command); 
+        Parser::caseCommands(command, obj, int_obj);
     }
+}
+
+
+std::vector<int> Parser::getLoopParams(std::string command) {
+    std::vector<int> a; 
+    std::string line = Parser::getLineInBound(command, "(", ")");
+    std::vector<std::string> command_elements = Parser::split(line, ':');
+    
+    for(std::string element : command_elements)
+        a.push_back(std::stoi(element));
+
+    return a; 
 }
 
 
 void Parser::caseCommands(std::string command, Object &obj, Integer &int_obj) {
 
     if(Parser::findFirstSubstring(command, "print")){
+
         Parser::print(command, obj, int_obj);
     }
     else if (Parser::findFirstSubstring(command, "file"))
     {
-        // std::cout << command << "\n"; 
+        Parser::writeFile(command);
     }
     else if (Parser::findFirstSubstring(command, "int"))
     {
@@ -62,6 +81,27 @@ void Parser::caseCommands(std::string command, Object &obj, Integer &int_obj) {
     }
 }
 
+
+void Parser::writeFile(std::string command){
+    std::string line = Parser::getLineInBound(command, "(", ")");
+    std::vector<std::string> command_elements = Parser::split(line, ':');
+
+    Parser::dropBounds(command_elements[0]);
+
+    std::ofstream file(command_elements[0], std::ios::app);
+
+    if(file.is_open()) {
+        Parser::dropBounds(command_elements[1]);
+
+        file << command_elements[1];
+
+        file.close();
+
+        std::cout << "Data is written successful." << "\n";
+    }
+    else 
+        std::cout << "Error of openning file!" << "\n";
+}
 
 
 void Parser::dropBounds(std::string &str) {
@@ -87,7 +127,8 @@ void Parser::print(std::string command, Object obj, Integer int_obj) {
     else {
         if (obj.findKey(print_line)){
             std::cout << print_line << "\n";
-        } else if (int_obj.findKey(print_line))
+        } 
+        else if (int_obj.findKey(print_line))
         {  
             std::cout << int_obj.getValue(print_line) << "\n";
         }
@@ -97,30 +138,30 @@ void Parser::print(std::string command, Object obj, Integer int_obj) {
 }
 
 
-void Parser::calculations(std::string command, Integer &obj) {
-    Parser::DropSpaces(command);
+void Parser::calculations(std::string command, Integer &int_obj) {
+    Parser::dropSpaces(command);
     std::vector<std::string> command_elements = Parser::split(command, ' ');
 
     if(command_elements.size() == 5) {
-        int valueA = Parser::getNumber(command_elements[2], obj);
-        int valueB = Parser::getNumber(command_elements[4], obj);
+        int valueA = Parser::getNumber(command_elements[2], int_obj);
+        int valueB = Parser::getNumber(command_elements[4], int_obj);
 
         if (Parser::findFirstSubstring(command, "+"))
         {
-            obj.setValue(command_elements[0], valueA + valueB); 
+            int_obj.setValue(command_elements[0], valueA + valueB); 
         }
         else if (Parser::findFirstSubstring(command, "-"))
         {
-            obj.setValue(command_elements[0], valueA - valueB); 
+            int_obj.setValue(command_elements[0], valueA - valueB); 
         }
         else if (Parser::findFirstSubstring(command, "*"))
         {
-            obj.setValue(command_elements[0], valueA * valueB); 
+            int_obj.setValue(command_elements[0], valueA * valueB); 
         }
         else if (Parser::findFirstSubstring(command, "/"))
         {
             if (valueB != 0)    
-                obj.setValue(command_elements[0], valueA / valueB);  
+                int_obj.setValue(command_elements[0], valueA / valueB);  
             else
                 std::cout << "Error! Division by zero!" << "\n";
         }
@@ -179,7 +220,7 @@ bool Parser::findFirstSubstring(std::string str, std::string substr){
 }
 
 
-void Parser::DropSpaces(std::string &line) {
+void Parser::dropSpaces(std::string &line) {
     std::size_t first = line.find_first_not_of(" "); 
     std::size_t last = line.find_last_not_of(" ");  
     line = line.substr(first, last - first + 1); 
@@ -194,5 +235,5 @@ std::string Parser::findBetweenSymbols(std::string line,std::string first_symbol
 
 void Parser::getLoopBody(std::string &loop){
     loop = Parser::getLineInBound(loop, "{", "}"); 
-    Parser::DropSpaces(loop);
+    Parser::dropSpaces(loop);
 }

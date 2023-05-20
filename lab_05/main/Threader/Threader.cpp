@@ -13,9 +13,9 @@ void Threader::executeThread() {
         std::vector <std::thread> threads; 
 
         for(int j=start; j<end; j++) {
-            Parser::parse(thread_commands[j], j);    
+            // Parser::parse(thread_commands[j], j);    
 
-            // threads.push_back(std::thread(Parser::parse, thread_commands[j], j)); 
+            threads.push_back(std::thread(Parser::parse, thread_commands[j], j)); 
         }
 
         for(std::thread& thread : threads) {
